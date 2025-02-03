@@ -1,0 +1,45 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  datasource:
+    url: jdbc:mariadb://125.7.137.190:3307/gpu_dashboard
+    username: root
+    password: new1234!
+    driver-class-name: org.mariadb.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MariaDBDialect
+
+logging:
+  level:
+    root: INFO
+    gpu_dashboard: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate: DEBUG
+
+# CORS 설정
+cors:
+  allowed-origins: "http://localhost:3000"
+  allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+  allowed-headers: "*"
+  max-age: 3600
+
+kubeconfig:
+  path: /Users/kimtaehyeong/workspace/gpu_pod_dashboard/src/main/resources/kube_config.yaml
+
+# 애플리케이션 관련 커스텀 설정
+app:
+  jwt:
+    secret: your-secret-key-here
+    expiration: 86400000  # 24시간
+  gpu:
+    check-interval: 60000  # GPU 상태 체크 간격 (밀리초)

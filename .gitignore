@@ -1,0 +1,43 @@
+# Kubernetes config
+**/kube_config.yaml
+src/main/resources/kube_config.yaml
+
+# Compiled class files
+*.class
+
+# Log files
+*.log
+
+# Package files
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+.project
+.classpath
+.settings/
+
+# Spring Boot
+application-*.properties
+!application.properties
+!application-dev.properties
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Node modules (프론트엔드가 있는 경우)
+node_modules/
