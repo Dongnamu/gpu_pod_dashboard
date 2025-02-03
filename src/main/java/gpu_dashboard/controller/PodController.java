@@ -5,17 +5,17 @@ import gpu_dashboard.dto.DeletePodResponseDto;
 import gpu_dashboard.dto.NamespaceDto;
 import gpu_dashboard.dto.PodResponseDto;
 import gpu_dashboard.service.PodService;
-import io.kubernetes.client.openapi.models.V1PodList;
+// import io.kubernetes.client.openapi.models.V1PodList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+// import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
-import java.util.List;
+// import java.util.List;
 
 /**
  * 쿠버네티스 Pod 관련 컨트롤러

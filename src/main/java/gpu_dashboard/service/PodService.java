@@ -3,9 +3,9 @@ package gpu_dashboard.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
-import io.kubernetes.client.openapi.models.V1Pod;
+// import io.kubernetes.client.openapi.models.V1Pod;
 import io.kubernetes.client.openapi.models.V1PodList;
-import io.kubernetes.client.openapi.models.V1Status;
+// import io.kubernetes.client.openapi.models.V1Status;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,25 +48,30 @@ public class PodService {
         try {
             logger.debug("Attempting to list pods in namespace: {}", namespace);
             V1PodList podList = coreV1Api.listNamespacedPod(
-                namespace.trim(),
+                namespace != null ? namespace.trim() : "",
                 null, null, null, null, null, null, null, null, null, false
             );
 
             List<PodInfoDto> podInfos = podList.getItems().stream()
                 .map(pod -> {
                     String uptime = "";
-                    OffsetDateTime startTime = pod.getStatus().getStartTime();
-                    if (startTime != null) {
-                        OffsetDateTime now = OffsetDateTime.now();
-                        Duration duration = Duration.between(startTime, now);
-                        long days = duration.toDays();
-                        long hours = duration.toHours() % 24;
-                        uptime = String.format("%dd %dh", days, hours);
+                    if (pod.getStatus() != null) {
+                        OffsetDateTime startTime = pod.getStatus().getStartTime();
+                        if (startTime != null) {
+                            OffsetDateTime now = OffsetDateTime.now();
+                            Duration duration = Duration.between(startTime, now);
+                            long days = duration.toDays();
+                            long hours = duration.toHours() % 24;
+                            uptime = String.format("%dd %dh", days, hours);
+                        }
                     }
                     
+                    String podName = pod.getMetadata() != null ? pod.getMetadata().getName() : "unknown";
+                    String podPhase = pod.getStatus() != null ? pod.getStatus().getPhase() : "unknown";
+                    
                     return new PodInfoDto(
-                        pod.getMetadata().getName(),
-                        pod.getStatus().getPhase(),
+                        podName,
+                        podPhase,
                         uptime
                     );
                 })
@@ -82,12 +87,11 @@ public class PodService {
 
     /**
      * 특정 Pod 삭제
-     * @param namespace Pod가 위치한 네임스페이스
+     * @param namespace 조회할 pod 네임스페이스
      * @param podName 삭제할 Pod 이름
      * @return DeletePodResponseDto 삭제 결과를 포함한 응답 객체
-     * @throws Exception API 호출 실패시 발생
      */
-    public DeletePodResponseDto deletePod(String namespace, String podName) throws Exception {
+    public DeletePodResponseDto deletePod(String namespace, String podName) {
         try {
             logger.debug("Pod 삭제 시도 - namespace: {}, podName: {}", namespace, podName);
             

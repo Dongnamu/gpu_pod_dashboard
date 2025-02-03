@@ -1,6 +1,5 @@
 package gpu_dashboard.dto;
 
-import java.time.OffsetDateTime;
 
 public class PodInfoDto {
     private String name;
