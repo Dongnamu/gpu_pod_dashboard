@@ -52,13 +52,15 @@ public class PodService {
                 null, null, null, null, null, null, null, null, null, false
             );
 
+            // 현재 시간은 루프 외부에서 한번만 계산
+            OffsetDateTime now = OffsetDateTime.now();
+
             List<PodInfoDto> podInfos = podList.getItems().stream()
                 .map(pod -> {
                     String uptime = "";
                     if (pod.getStatus() != null) {
                         OffsetDateTime startTime = pod.getStatus().getStartTime();
                         if (startTime != null) {
-                            OffsetDateTime now = OffsetDateTime.now();
                             Duration duration = Duration.between(startTime, now);
                             long days = duration.toDays();
                             long hours = duration.toHours() % 24;
@@ -66,21 +68,35 @@ public class PodService {
                         }
                     }
                     
-                    String podName = pod.getMetadata() != null ? pod.getMetadata().getName() : "unknown";
-                    String podPhase = pod.getStatus() != null ? pod.getStatus().getPhase() : "unknown";
+                    String podName = (pod.getMetadata() != null) ? pod.getMetadata().getName() : "unknown";
+                    String podPhase = (pod.getStatus() != null) ? pod.getStatus().getPhase() : "unknown";
                     
-                    return new PodInfoDto(
-                        podName,
-                        podPhase,
-                        uptime
-                    );
+                    // 각 container의 "CUDA_VISIBLE_DEVICES" 환경변수를 확인하여 GPU 장비번호를 가져옴
+                    String gpuDevices = "";
+                    // logger.debug("PodSpec: {}", pod.getSpec());
+                    if (pod.getSpec() != null && pod.getSpec().getContainers() != null) {
+                        gpuDevices = pod.getSpec().getContainers().stream()
+                            .map(container -> {
+                                String device = "Not GPU";
+                                if (container.getEnv() != null) {
+                                    device = container.getEnv().stream()
+                                              .filter(envVar -> "NVIDIA_VISIBLE_DEVICES".equals(envVar.getName()))
+                                              .map(envVar -> envVar.getValue())
+                                              .findFirst().orElse("Not GPU");
+                                }
+                                return device;
+                            })
+                            .collect(Collectors.joining(", "));
+                    }
+                    
+                    return new PodInfoDto(podName, podPhase, uptime, gpuDevices);
                 })
                 .collect(Collectors.toList());
 
             return new PodResponseDto(podInfos);
             
         } catch (Exception e) {
-            logger.error("Failed to list pods in namespace '{}': {}", namespace, e.getMessage());
+            logger.error("Failed to list pods in namespace '{}': {}", namespace, e.getMessage(), e);
             throw e;
         }
     }
