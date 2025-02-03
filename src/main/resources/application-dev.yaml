@@ -4,10 +4,14 @@ server:
     context-path: /api
 
 spring:
+  config:
+    import: "classpath:application-db.yaml"
+
   datasource:
-    url: jdbc:mariadb://125.7.137.190:3307/gpu_dashboard
-    username: root
-    password: new1234!
+    # 실제 값은 별도 파일(application-db.yaml)에서 로딩
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.mariadb.jdbc.Driver
 
   jpa:
@@ -32,9 +36,8 @@ cors:
   allowed-methods: GET,POST,PUT,DELETE,OPTIONS
   allowed-headers: "*"
   max-age: 3600
-
 kubeconfig:
-  path: /Users/kimtaehyeong/workspace/gpu_pod_dashboard/src/main/resources/kube_config.yaml
+  path: ./src/main/resources/kube_config.yaml
 
 # 애플리케이션 관련 커스텀 설정
 app:

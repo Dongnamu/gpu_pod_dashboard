@@ -2,6 +2,10 @@
 **/kube_config.yaml
 src/main/resources/kube_config.yaml
 
+# DB config
+**/application-db.yaml
+src/main/resources/application-db.yaml
+
 # Compiled class files
 *.class
 
@@ -9,6 +13,7 @@ src/main/resources/kube_config.yaml
 *.log
 
 # Package files
+.gradle
 *.jar
 *.war
 *.nar
