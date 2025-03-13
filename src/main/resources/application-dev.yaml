@@ -26,7 +26,7 @@ spring:
 logging:
   level:
     root: INFO
-    gpu_dashboard: DEBUG
+    com.example.gpu_dashboard: DEBUG
     org.springframework.web: DEBUG
     org.hibernate: DEBUG
 

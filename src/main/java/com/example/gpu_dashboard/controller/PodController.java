@@ -1,10 +1,11 @@
-package gpu_dashboard.controller;
+package com.example.gpu_dashboard.controller;
 
-import gpu_dashboard.dto.DeletePodRequest;
-import gpu_dashboard.dto.DeletePodResponseDto;
-import gpu_dashboard.dto.NamespaceDto;
-import gpu_dashboard.dto.PodResponseDto;
-import gpu_dashboard.service.PodService;
+import com.example.gpu_dashboard.dto.DeletePodRequest;
+import com.example.gpu_dashboard.dto.DeletePodResponseDto;
+import com.example.gpu_dashboard.dto.NamespaceDto;
+import com.example.gpu_dashboard.dto.PodResponseDto;
+import com.example.gpu_dashboard.dto.PodUpdateUserDto;
+import com.example.gpu_dashboard.service.PodService;
 // import io.kubernetes.client.openapi.models.V1PodList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,7 @@ public class PodController {
     }
 
     /**
-     * 특정 네임스페이스의 Pod 목록을 조회
+     * 특정 네임스페이스의 Pod 목록을 조회하고 DB에 저장
      * @param request 네임스페이스 정보를 담은 DTO
      * @return Pod 정보 목록을 담은 응답 DTO
      */
@@ -48,6 +49,23 @@ public class PodController {
             return podService.listPods(namespace);
         } catch (Exception e) {
             logger.error("Error getting pods: ", e);
+            return new PodResponseDto(Collections.emptyList());
+        }
+    }
+    
+    /**
+     * 특정 네임스페이스의 Pod 목록을 DB에서 조회
+     * @param request 네임스페이스 정보를 담은 DTO
+     * @return Pod 정보 목록을 담은 응답 DTO
+     */
+    @PostMapping("/pods/db")
+    public PodResponseDto getPodsFromDb(@RequestBody NamespaceDto request) {
+        try {
+            String namespace = request.getNamespace();
+            logger.debug("Received DB query request for namespace: {}", namespace);
+            return podService.getPodsFromDb(namespace);
+        } catch (Exception e) {
+            logger.error("Error getting pods from DB: ", e);
             return new PodResponseDto(Collections.emptyList());
         }
     }
@@ -67,6 +85,13 @@ public class PodController {
             logger.error("Pod 삭제 중 오류 발생: ", e);
             return new DeletePodResponseDto("fail");
         }
+    }
+
+    @PostMapping("/pods/update/username")
+    public PodResponseDto updatePod(@RequestBody PodUpdateUserDto request) {
+        logger.debug("Pod 사용자 이름 업데이트 요청 - namespace: {}, podName: {}, username: {}", 
+            request.getNamespace(), request.getPodname(), request.getUsername());
+        return podService.updateUsername(request.getNamespace(), request.getPodname(), request.getUsername());
     }
 }
 

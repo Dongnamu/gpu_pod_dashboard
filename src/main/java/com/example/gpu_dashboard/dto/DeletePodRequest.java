@@ -1,4 +1,4 @@
-package gpu_dashboard.dto;
+package com.example.gpu_dashboard.dto;
 
 public class DeletePodRequest {
     private String namespace;
