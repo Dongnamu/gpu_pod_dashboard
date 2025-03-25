@@ -16,6 +16,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.Collections;
 
@@ -108,6 +109,24 @@ public class PodService {
             ZonedDateTime koreaTime = ZonedDateTime.now(koreaZoneId);
             OffsetDateTime now = koreaTime.toOffsetDateTime();
             logger.debug("Current time (KST): {}", koreaTime);
+
+            // 현재 쿠버네티스에 존재하는 Pod 이름들을 Set으로 수집
+            Set<String> currentPodNames = podList.getItems().stream()
+                .map(pod -> pod.getMetadata().getName())
+                .collect(Collectors.toSet());
+            logger.debug("Current pod names: {}", currentPodNames);
+
+            // DB에서 해당 네임스페이스의 모든 Pod 조회
+            List<PodInfoEntity> dbPods = podInfoRepository.findByNamespace(namespace);
+
+            // 현재 쿠버네티스에 없는 Pod는 DB에서 삭제
+            for (PodInfoEntity dbPod : dbPods) {
+                if (!currentPodNames.contains(dbPod.getPodName())) {
+                    podInfoRepository.delete(dbPod);
+                    logger.debug("Deleted pod from DB: {}/{}", namespace, dbPod.getPodName());
+                }
+            }
+
 
             List<PodInfoDto> podInfos = podList.getItems().stream()
                 .map(pod -> {

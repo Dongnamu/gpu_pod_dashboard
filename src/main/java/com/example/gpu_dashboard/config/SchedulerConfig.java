@@ -28,7 +28,7 @@ public class SchedulerConfig {
     }
     
     // 1분마다 Pod 정보 업데이트
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 120000)
     public void updatePodInfo() {
         logger.info("Scheduled pod info update started");
         
