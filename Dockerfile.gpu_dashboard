@@ -1,0 +1,24 @@
+# 빌드 스테이지
+FROM gradle:7.6.1-jdk17-alpine AS builder
+
+WORKDIR /app
+COPY . .
+
+# 그래들 빌드 캐시 활용
+RUN gradle build --no-daemon
+
+# 실행 스테이지
+FROM eclipse-temurin:17-jre-alpine
+
+WORKDIR /app
+
+# 빌드된 JAR 파일만 복사
+COPY --from=builder /app/build/libs/*.jar app.jar
+
+# JVM 튜닝 옵션
+ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
+
+
+EXPOSE 3001
+
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

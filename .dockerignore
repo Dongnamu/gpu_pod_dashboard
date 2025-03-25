@@ -1,0 +1,16 @@
+.git
+.gradle
+.idea
+build
+!build/libs/*.jar
+*.md
+.gitignore
+.env
+*.log
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+logs/
+node_modules/

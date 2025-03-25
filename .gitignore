@@ -13,6 +13,7 @@ src/main/resources/application-db.yaml
 *.log
 
 # Package files
+gradle/
 .gradle/
 build/
 *.jar
