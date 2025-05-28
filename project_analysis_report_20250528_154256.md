@@ -87,42 +87,46 @@ graph TD
 
 ```mermaid
 graph LR
-    subgraph Unknown Layer
-        [[Application]] --> |main 메서드| Configuration Layer
+    subgraph Unknown_Layer
+        Application["Application"] --> |main 메서드| K8sConfig
+        Application --> SchedulerConfig
     end
 
-    subgraph Configuration Layer
-        [[K8sConfig]] --> |coreV1Api| Business Layer
-        [[SchedulerConfig]] --> |updatePods| Business Layer
+    subgraph Configuration_Layer
+        K8sConfig["K8sConfig"] --> |coreV1Api| PodService
+        SchedulerConfig["SchedulerConfig"] --> |updatePods| PodService
     end
 
-    subgraph Presentation Layer
-        [PodController] --> |deletePod, getPods, getPodsFromDb, updatePod| Business Layer
+    subgraph Presentation_Layer
+        PodController["PodController"] --> |deletePod, getPods, getPodsFromDb, updatePod| PodService
     end
 
-    subgraph Business Layer
-        {PodService} --> |deletePod, getPodsFromDb, listPods, savePodInfo, updatePodStatusInDb| Domain Layer
+    subgraph Business_Layer
+        PodService["PodService"] --> |deletePod, getPodsFromDb, listPods, savePodInfo, updatePodStatusInDb| PodInfoEntity
     end
 
-    subgraph Domain Layer
-        [(PodInfoEntity)] --> |getGpuDevices, getNamespace, getPodName, getPodStatus| Presentation Layer
+    subgraph Domain_Layer
+        PodInfoEntity["PodInfoEntity"] --> |getGpuDevices, getNamespace, getPodName, getPodStatus| PodController
     end
 
-    subgraph DTO Layer
-        [[DeletePodRequest]] --> |getNamespace, getPodName| Business Layer
-        [[DeletePodResponseDto]] --> |getStatus| Presentation Layer
-        [[NamespaceDto]] --> |getNamespace, setNamespace| Business Layer
-        [[PodInfoDto]] --> |getGpuDevices, getNamespace, getPodname, getPodstatus, getPoduptime| Presentation Layer
-        [[PodResponseDto]] --> |getResult| Presentation Layer
-        [[PodUpdateUserDto]] --> |getNamespace, getPodname, getUsername| Business Layer
+    subgraph DTO_Layer
+        DeletePodRequest["DeletePodRequest"] --> |getNamespace, getPodName| PodService
+        DeletePodResponseDto["DeletePodResponseDto"] --> |getStatus| PodController
+        NamespaceDto["NamespaceDto"] --> |getNamespace, setNamespace| PodService
+        PodInfoDto["PodInfoDto"] --> |getGpuDevices, getNamespace, getPodname, getPodstatus, getPoduptime| PodController
+        PodResponseDto["PodResponseDto"] --> |getResult| PodController
+        PodUpdateUserDto["PodUpdateUserDto"] --> |getNamespace, getPodname, getUsername| PodService
     end
 
-    Unknown Layer --> Configuration Layer
-    Configuration Layer --> Business Layer
-    Business Layer --> Domain Layer
-    Business Layer --> DTO Layer
-    Domain Layer --> DTO Layer
-    DTO Layer --> Presentation Layer
+    %% 계층 간 관계 표현 (선택적, 실제 렌더링에선 생략 가능)
+    Application --> K8sConfig
+    K8sConfig --> PodService
+    PodService --> PodInfoEntity
+    PodInfoEntity --> PodController
+    DeletePodRequest --> PodService
+    DeletePodResponseDto --> PodController
+    NamespaceDto --> PodService
+    PodInfoDto --> PodControlle
 ```
 
 ## 📦 패키지 의존성
