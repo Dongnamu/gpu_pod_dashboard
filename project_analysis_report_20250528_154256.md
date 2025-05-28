@@ -22,44 +22,45 @@
 ```mermaid
 graph TB
     subgraph "Presentation Layer"
-        [PodController] --> |DeletePodRequest| {PodService}
-        [PodController] --> |PodResponseDto| {PodService}
-        [PodController] --> |PodUpdateUserDto| {PodService}
+        PodController --> |DeletePodRequest| PodService
+        PodController --> |PodResponseDto| PodService
+        PodController --> |PodUpdateUserDto| PodService
     end
 
     subgraph "Business Layer"
-        {PodService} --> |PodInfoEntity| [(PodInfoEntity)]
-        {PodService} --> |PodResponseDto| [PodController]
-        {PodService} --> |DeletePodResponseDto| [PodController]
+        PodService --> |PodInfoEntity| PodInfoEntity
+        PodService --> |PodResponseDto| PodController
+        PodService --> |DeletePodResponseDto| PodController
     end
 
     subgraph "Domain Layer"
-        [(PodInfoEntity)] --> |PodInfoDto| {PodService}
+        PodInfoEntity --> |PodInfoDto| PodService
     end
 
     subgraph "Unknown Layer"
-        [Application] --> |K8sConfig| {PodService}
-        [Application] --> |SchedulerConfig| {PodService}
-        [Application] --> |PodInfoDto| {PodService}
-        [Application] --> |NamespaceDto| {PodService}
+        Application --> |K8sConfig| PodService
+        Application --> |SchedulerConfig| PodService
+        Application --> |PodInfoDto| PodService
+        Application --> |NamespaceDto| PodService
     end
 
     subgraph "Configuration Layer"
-        {K8sConfig} --> |Kubernetes API| [External System]
-        {SchedulerConfig} --> |updatePodInfo| [(PodInfoEntity)]
+        K8sConfig --> |Kubernetes API| ExternalSystem
+        SchedulerConfig --> |updatePodInfo| PodInfoEntity
     end
 
     subgraph "External Systems"
-        [External System] --> |PodInfoEntity| {PodService}
-        [External System] --> |PodResponseDto| [PodController]
-        DB[(Database)] --> |PodInfoEntity| {PodService}
+        ExternalSystem --> |PodInfoEntity| PodService
+        ExternalSystem --> |PodResponseDto| PodController
+        DB --> |PodInfoEntity| PodService
     end
 
-    style [PodController] fill:#f9f,stroke:#333
-    style {PodService} fill:#afa,stroke:#333
-    style [(PodInfoEntity)] fill:#9f9,stroke:#333
-    style DB[(Database)] fill:#99f,stroke:#333
-    style [External System] fill:#ccc,stroke:#333
+    %% 스타일 설정
+    style PodController fill:#f9f,stroke:#333
+    style PodService fill:#afa,stroke:#333
+    style PodInfoEntity fill:#9f9,stroke:#333
+    style DB fill:#99f,stroke:#333
+    style ExternalSystem fill:#ccc,stroke:#333
 ```
 
 ## 🔄 API 흐름도
